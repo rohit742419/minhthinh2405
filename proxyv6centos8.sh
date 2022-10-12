@@ -72,11 +72,11 @@ gen_proxy_file_for_user() {
 $(awk -F "/" '{print $3 ":" $4 ":" $1 ":" $2 }' ${WORKDATA})
 EOF
 }
-
 upload_proxy() {
-    local PASS=$(minhthinhitt.com)
+    cd $WORKDIR
+    local PASS=$(random)
     zip --password $PASS proxy.zip proxy.txt
-    URL=$(curl -s --upload-file proxy.zip https://transfer.sh/proxy.zip)
+    URL=$(curl -F "file=@proxy.zip" https://file.io)
 
     echo "Proxy is ready! Format IP:PORT:LOGIN:PASS"
     echo "Download zip archive from: ${URL}"
@@ -115,8 +115,11 @@ IP6=$(curl -6 -s icanhazip.com | cut -f1-4 -d':')
 
 echo "Internal ip = ${IP4}. Exteranl sub for ip6 = ${IP6}"
 
+echo "How many proxy do you want to create? Example 500"
+read COUNT
+
 FIRST_PORT=10000
-LAST_PORT=11000
+LAST_PORT=$(($FIRST_PORT + $COUNT))
 
 gen_data >$WORKDIR/data.txt
 gen_iptables >$WORKDIR/boot_iptables.sh
